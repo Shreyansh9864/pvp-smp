@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCTS | SECURE LOGIN</title>
+    <style>
+        :root {
+            --matrix: #00ff41;
+            --void: #020202;
+            --ease-cyber: cubic-bezier(0.23, 1, 0.32, 1); /* Ultra smooth easing */
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background: var(--void);
+            overflow: hidden;
+            font-family: 'Consolas', 'Courier New', monospace;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        /* --- LOGIN PROMPT SCREEN --- */
+        #login-screen {
+            position: fixed;
+            inset: 0;
+            background: var(--void);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 1.2s var(--ease-cyber);
+        }
+
+        .login-box {
+            text-align: center;
+            border: 2px solid var(--matrix);
+            padding: 40px;
+            box-shadow: 0 0 30px var(--matrix);
+            transform: scale(1);
+            transition: transform 0.8s var(--ease-cyber);
+        }
+
+        h2 { color: var(--matrix); letter-spacing: 5px; margin-bottom: 30px; }
+
+        input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--matrix);
+            color: white;
+            font-size: 2rem;
+            text-align: center;
+            outline: none;
+            width: 350px;
+        }
+
+        /* --- MAIN UI --- */
+        #main-ui {
+            display: none;
+            opacity: 0;
+            width: 100vw; height: 100vh;
+            transition: opacity 1.5s var(--ease-cyber);
+        }
+
+        #matrix-canvas { position: fixed; inset: 0; z-index: 1; opacity: 0.4; }
+
+        .ui-container {
+            position: relative; z-index: 10;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+
+        .loader-sprite {
+            width: 700px; height: 450px;
+            background-size: contain; background-repeat: no-repeat;
+            background-position: center;
+            filter: drop-shadow(0 0 40px var(--matrix));
+            animation: playFrames 0.75s steps(1) infinite;
+        }
+
+        @keyframes playFrames {
+            0% { background-image: url('frame1.jpg'); }
+            33% { background-image: url('frame2.jpg'); }
+            66% { background-image: url('frame3.jpg'); }
+        }
+
+        .progress-box { position: relative; width: 600px; margin-top: 40px; }
+
+        .pickaxe {
+            position: absolute; left: -40px; top: -90px;
+            font-size: 80px; z-index: 15;
+            animation: movePickaxe 4.5s linear forwards, mine 0.25s infinite alternate ease-in-out;
+        }
+
+        @keyframes movePickaxe { to { left: 95%; } }
+        @keyframes mine { from { transform: rotate(-20deg); } to { transform: rotate(45deg); } }
+
+        .bar-outer { width: 100%; height: 12px; border: 1px solid var(--matrix); background: #111; border-radius: 10px; overflow: hidden; }
+        .bar-inner { width: 0%; height: 100%; background: var(--matrix); animation: loadProgress 4.5s linear forwards; box-shadow: 0 0 15px var(--matrix); }
+
+        @keyframes loadProgress { to { width: 100%; } }
+
+        .status-text { color: var(--matrix); font-size: 1.2rem; margin-top: 25px; letter-spacing: 8px; text-transform: uppercase; opacity: 0.8; }
+
+        /* --- FINAL OVERLAY (NO REFRESH NEEDED) --- */
+        #final-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 200;
+            display: none; opacity: 0;
+            flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 1s var(--ease-cyber);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box" id="lbox">
+            <h2>SECURE ACCESS</h2>
+            <input type="text" id="user-input-field" placeholder="TYPE NAME..." autocomplete="off">
+        </div>
+    </div>
+
+    <div id="main-ui">
+        <canvas id="matrix-canvas"></canvas>
+        <div class="ui-container">
+            <div class="loader-sprite"></div>
+            <div class="progress-box">
+                <div class="pickaxe">⛏️</div>
+                <div class="bar-outer"><div class="bar-inner"></div></div>
+            </div>
+            <div class="status-text" id="status-display">AUTHORIZING...</div>
+        </div>
+    </div>
+
+    <div id="final-overlay">
+        <h1 style="color: var(--matrix); font-size: 5rem; text-shadow: 0 0 30px var(--matrix);">ACCESS GRANTED</h1>
+        <h2 id="welcome-msg" style="color:#fff; font-size: 2.5rem; letter-spacing:10px;"></h2>
+    </div>
+
+    <script>
+        const loginScreen = document.getElementById('login-screen');
+        const mainUI = document.getElementById('main-ui');
+        const finalOverlay = document.getElementById('final-overlay');
+        const nameInput = document.getElementById('user-input-field');
+        const statusText = document.getElementById('status-display');
+
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && nameInput.value.trim() !== "") {
+                const userName = nameInput.value.trim().toUpperCase();
+
+                // Smooth Fade Out
+                document.getElementById('lbox').style.transform = "scale(0.9) translateY(-20px)";
+                loginScreen.style.opacity = '0';
+
+                setTimeout(() => {
+                    loginScreen.style.display = 'none';
+                    mainUI.style.display = 'block';
+                    // Trigger Fade In
+                    setTimeout(() => mainUI.style.opacity = '1', 50);
+                    startSystem(userName);
+                }, 1000);
+            }
+        });
+
+        function startSystem(name) {
+            initMatrix();
+            const stages = ["SCANNING_PERIPHERALS...", "DECRYPTING_PVP_HASH...", "BYPASSING_FIREWALL...", "SCTS_READY"];
+            let i = 0;
+            const interval = setInterval(() => {
+                statusText.style.opacity = '0';
+                setTimeout(() => {
+                    statusText.innerText = stages[i % stages.length];
+                    statusText.style.opacity = '0.8';
+                }, 200);
+                i++;
+            }, 1100);
+
+            setTimeout(() => {
+                clearInterval(interval);
+                // Ultra smooth transition to final screen
+                finalOverlay.style.display = 'flex';
+                document.getElementById('welcome-msg').innerText = "WELCOME, " + name;
+
+                setTimeout(() => {
+                    finalOverlay.style.opacity = '1';
+                }, 50);
+
+                setTimeout(() => {
+                    window.location.href = "ranks.html";
+                }, 2500);
+
+            }, 4600);
+        }
+
+        function initMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const drops = Array(Math.floor(canvas.width / 20)).fill(1);
+            function draw() {
+                ctx.fillStyle = "rgba(0,0,0,0.05)";
+                ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle = "#0F0";
+                ctx.font = "20px monospace";
+                drops.forEach((y, i) => {
+                    const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+                    ctx.fillText(text, i*20, y*20);
+                    if(y*20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                });
+            }
+            setInterval(draw, 35);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCTS | Full Neon Rankings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --panel: rgba(20, 20, 25, 0.9);
+            --accent: #00ffcc;
+            --s-tier: #ff0055;
+            --a-tier: #ffaa00;
+            --b-tier: #00ccff;
+            --c-tier: #99ff00;
+            --border: rgba(255, 255, 255, 0.05);
+            --text-main: #ffffff;
+            --text-dim: #666677;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 100px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        .grid-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 255, 204, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 255, 204, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: top;
+            z-index: -1;
+            animation: moveGrid 20s linear infinite;
+        }
+
+        @keyframes moveGrid {
+            from { background-position: 0 0; }
+            to { background-position: 0 100%; }
+        }
+
+        .nav-header {
+            position: fixed;
+            top: 20px; width: 90%; max-width: 1100px;
+            background: var(--panel);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .logo { font-family: 'Syncopate', sans-serif; font-weight: 700; letter-spacing: 4px; color: var(--accent); }
+
+        .leaderboard-card {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+        }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; color: var(--text-dim); font-size: 0.7rem; padding: 15px 20px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid var(--border); }
+        td { padding: 12px 20px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+
+        .tier-row { background: rgba(255,255,255,0.02); font-weight: 900; font-size: 0.8rem; letter-spacing: 3px; }
+        .s-glow { color: var(--s-tier); text-shadow: 0 0 10px var(--s-tier); }
+        .a-glow { color: var(--a-tier); }
+        .b-glow { color: var(--b-tier); }
+        .c-glow { color: var(--c-tier); }
+
+        .skin-box { width: 45px; height: 45px; background: #1a1a20; border: 1px solid var(--border); border-radius: 8px; image-rendering: pixelated; }
+        .mastery-icons { display: flex; gap: 5px; }
+        .icon-pill { width: 28px; height: 28px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; border: 1px solid var(--border); }
+
+        .ign { font-weight: 900; font-size: 1.05rem; color: #fff; }
+        .region { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; }
+        .vp-tag { color: var(--accent); font-family: 'Syncopate', sans-serif; font-size: 0.75rem; font-weight: 700; }
+
+        .rgb-footer { margin-top: 60px; width: 100%; max-width: 1100px; padding: 3px; background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ff0000); background-size: 300%; animation: rgb-move 5s linear infinite; border-radius: 15px; }
+        @keyframes rgb-move { 0% { background-position: 0%; } 100% { background-position: 100%; } }
+        .footer-content { background: #0a0a0c; border-radius: 12px; padding: 30px; text-align: center; }
+        .footer-content h2 { margin: 0; font-family: 'Syncopate', sans-serif; font-size: 0.9rem; letter-spacing: 5px; color: #fff; }
+
+
+        .nav-header {
+        position: fixed;
+        top: 20px;
+        width: 90%;
+        max-width: 1200px;
+        background: rgba(10, 10, 12, 0.95); /* Deep dark background like FastTiers */
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 255, 204, 0.2); /* Soft neon border */
+        border-radius: 12px;
+        padding: 12px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .logo {
+        font-family: 'Syncopate', sans-serif;
+        font-weight: 700;
+        letter-spacing: 3px;
+        color: var(--accent);
+        font-size: 1.1rem;
+    }
+
+    /* Cleaned up Logout Button */
+    .btn-logout {
+        text-decoration: none;
+        color: #fff;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 8px 20px;
+        border: 1px solid var(--accent);
+        border-radius: 6px;
+        background: transparent;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+    }
+
+    .btn-logout:hover {
+        background: var(--accent);
+        color: #000;
+        box-shadow: 0 0 15px var(--accent);
+    }
+
+    .status-tag {
+        color: var(--accent);
+        font-family: 'Syncopate', sans-serif;
+        font-size: 0.7rem;
+        opacity: 0.8;
+    }
+
+
+    </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+
+
+    <header class="nav-header">
+    <div class="logo">SCTS // SYSTEM</div>
+
+    <div style="display: flex; align-items: center; gap: 25px;">
+        <span class="status-tag">DATABASE_LOADED</span>
+        <a href="scts-teirs.html" class="btn-logout">Logout</a>
+    </div>
+</header>
+
+<div class="leaderboard-card">
+    <table>
+        <thead>
+            <tr>
+                <th width="10%">Skin</th>
+                <th width="40%">Competitor</th>
+                <th width="25%">Mastery</th>
+                <th width="25%">Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="tier-row"><td colspan="4" class="s-glow">✦ S_RANK / THE_YONKO</td></tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Justzrupak</div><div class="region">📍 TAMIL NADU</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">⚔️</div><div class="icon-pill">🪓</div><div class="icon-pill">⚒️</div></div></td>
+                <td><span class="vp-tag">2400 VP</span></td>
+            </tr>
+
+            <tr class="tier-row"><td colspan="4" class="a-glow">✦ A_RANK / SHICHIBUKAI</td></tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Goatmessi12</div><div class="region">📍 INDIA</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">⚔️</div><div class="icon-pill">🏹</div></div></td>
+                <td><span class="vp-tag">2100 VP</span></td>
+            </tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Rakheedhar</div><div class="region">📍 ANDHRA PRADESH</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">⚔️</div><div class="icon-pill">🛡️</div></div></td>
+                <td><span class="vp-tag">1700 VP</span></td>
+            </tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Shaunak_11</div><div class="region">📍 JAMMU KASHMIR</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td>
+                <td><span class="vp-tag">1650 VP</span></td>
+            </tr>
+
+            <tr class="tier-row"><td colspan="4" class="b-glow">✦ B_RANK / SUPERNOVA</td></tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Apexlight3775</div><div class="region">📍 KERALA</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">🪓</div></div></td>
+                <td><span class="vp-tag">1630 VP</span></td>
+            </tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Aaron_18</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td>
+                <td><span class="vp-tag">1500 VP</span></td>
+            </tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Muhil345</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">🗡️</div></div></td>
+                <td><span class="vp-tag">1490 VP</span></td>
+            </tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Soullessstar</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">⚒️</div></div></td>
+                <td><span class="vp-tag">1470 VP</span></td>
+            </tr>
+            <tr>
+                <td><img src="" class="skin-box"></td>
+                <td><div class="ign">Bruh</div></td>
+                <td><div class="mastery-icons"><div class="icon-pill">🛡️</div></div></td>
+                <td><span class="vp-tag">1300 VP</span></td>
+            </tr>
+
+            <tr class="tier-row"><td colspan="4" class="c-glow">✦ C_RANK / PIRATES</td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Sairishi</div></td><td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td><td><span class="vp-tag">1200 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">AaryanGamer266</div></td><td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td><td><span class="vp-tag">1000 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Bubblegum</div></td><td><div class="mastery-icons"><div class="icon-pill">🍭</div></div></td><td><span class="vp-tag">900 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Somesh</div></td><td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td><td><span class="vp-tag">850 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">LunarianKing</div></td><td><div class="mastery-icons"><div class="icon-pill">🌙</div></div></td><td><span class="vp-tag">750 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Santosh</div></td><td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td><td><span class="vp-tag">700 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Remrin</div></td><td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td><td><span class="vp-tag">680 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Shinav</div></td><td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td><td><span class="vp-tag">550 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Yuvan</div></td><td><div class="mastery-icons"><div class="icon-pill">⚔️</div></div></td><td><span class="vp-tag">440 VP</span></td></tr>
+
+            <tr class="tier-row"><td colspan="4" style="color: #888;">✦ D_RANK / CADETS</td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Rishith</div></td><td>-</td><td><span class="vp-tag">300 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Akshith</div></td><td>-</td><td><span class="vp-tag">250 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Smol</div></td><td>-</td><td><span class="vp-tag">100 VP</span></td></tr>
+            <tr><td><img src="" class="skin-box"></td><td><div class="ign">Nahos</div></td><td>-</td><td><span class="vp-tag">50 VP</span></td></tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="rgb-footer">
+    <div class="footer-content">
+        <h2>MADE BY ADINATH & RUPAK & SHREYANSH</h2>
+        <p style="color: var(--text-dim); font-size: 0.7rem; margin-top: 10px; letter-spacing: 2px;">
+            WEEKLY UPDATES ACTIVE // SUBMIT POINT CHANGES TO STAFF
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
